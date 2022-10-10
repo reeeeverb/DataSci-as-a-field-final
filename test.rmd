@@ -1,0 +1,61 @@
+---
+title: "nyc_data"
+output: html_document
+date: "2022-08-29"
+---
+
+## R Markdown
+
+#### Question of Intrest
+- Is there a positive correlation between economic downturn and crime within NYC?
+- To explore this we will be looking at crime data collected between 2008-2021 within the city of New York by the NYPD.
+
+#### Install and Format CSV
+```r
+install.packages("tidyverse")
+install.packages("dplyr")
+library(tidyverse)
+library(dplyr)
+```
+```r
+url_in <- "https://data.cityofnewyork.us/api/views/833y-fsy8/rows.csv?accessType=DOWNLOAD"
+raw_data <- read_csv(url_in)
+```
+
+#### Tidy and Clean Data 
+
+```r
+raw_data <- raw_data %>% 
+  select(-c(X_COORD_CD, Y_COORD_CD, OCCUR_TIME))
+
+raw_data <- raw_data %>% 
+  mutate(OCCUR_DATE = mdy(OCCUR_DATE))```
+
+crime_by_boro <- raw_data %>%
+  group_by(BORO) %>%
+  summarize(sum(STATISTICAL_MURDER_FLAG))
+```
+
+#### Visualize Data
+  
+```r
+barplot(crime_by_boro$`sum(STATISTICAL_MURDER_FLAG)`, names.arg = crime_by_boro$BORO, main="Murder By Boro", xlab = "BORO", ylab="# of Murders", col="purple")```
+
+plot(crime_by_year$year, crime_by_year$`sum(STATISTICAL_MURDER_FLAG)`, type = "b", pch = 19, col="purple", xlab="year", ylab="# of murders")```
+
+```
+![](images/MurderByYear.png)
+
+![](images/MurderByBoro.png)
+
+#### Analysis
+- Based on the 2 graphs it seems that murder is correlated to level of poverty
+- During times of economic hardship the murder rate rises as seen in the line graph 
+- And the bar graph clearly shows the more economically disadvantaged neighborhoods have the highest murder rates
+
+#### Conclusion 
+- This leads to my conclusion that poverty within NYC does in fact lead to higher violent crime rates.I would be intereseted in exploring this across more time periods and more cities. 
+
+#### Biases
+- This conclusion is one that I have found in other data is so it is possible my judgement is skewed.
+- The NYC violent crime data is based on those who were accused of crime, so some people who were not found guilty are included in the data. 
